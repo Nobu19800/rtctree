@@ -1004,7 +1004,7 @@ class Component(TreeNode):
         with self._mutex:
             return self._obj
 
-    def add_logger(self, cb, level='NORMAL', filters='ALL'):
+    def add_logger(self, cb, level='INFO', filters='ALL'):
         '''Add a callback to receive log events from this component.
 
         @param cb The callback function to receive log events. It must have the
@@ -1027,7 +1027,7 @@ class Component(TreeNode):
             props = {'logger.log_level': level,
                     'logger.filter': filters}
             props = utils.dict_to_nvlist(props)
-            sprof = SDOPackage.ServiceProfile(id=uuid_val.get_bytes(),
+            sprof = SDOPackage.ServiceProfile(id=str(uuid_val),
                     interface_type=intf_type, service=obs._this(),
                     properties=props)
             conf = self.object.get_configuration()
@@ -1047,7 +1047,7 @@ class Component(TreeNode):
         if cb_id not in self._loggers:
             raise exceptions.NoLoggerError(cb_id, self.name)
         conf = self.object.get_configuration()
-        res = conf.remove_service_profile(cb_id.get_bytes())
+        res = conf.remove_service_profile(str(cb_id))
         del self._loggers[cb_id]
 
     ###########################################################################
@@ -1155,7 +1155,7 @@ class Component(TreeNode):
     def _enable_dynamic(self, enable=True):
         if enable:
             obs = sdo.RTCObserver(self)
-            uuid_val = uuid.uuid4().get_bytes()
+            uuid_val = str(uuid.uuid4())
             intf_type = obs._this()._NP_RepositoryId
             props = utils.dict_to_nvlist({'heartbeat.enable': 'YES',
                 'heartbeat.interval': '1.0',
